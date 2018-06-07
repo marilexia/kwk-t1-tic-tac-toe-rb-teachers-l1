@@ -1,3 +1,18 @@
+WIN_COMBINATIONS = [
+  [0, 1, 2], #top row
+  [3, 4, 5], #middle row
+  [6, 7, 8], #bottom row
+
+  [0, 3, 6], #left column
+  [1, 4, 7], #middle column
+  [2, 5, 8], #right column
+
+  [0, 4, 8], #left to right diagonal
+  [2, 4, 6] #right to left diagonal
+]
+
+####################
+
 def display_board(board)
   puts " #{board[0]} | #{board[1]} | #{board[2]} "
   puts "-----------"
@@ -15,7 +30,7 @@ end
 
 ####################
 
-def move(board, index, current_player = "X")
+def move(board, index, current_player)
   board[index] = current_player
 end
 
@@ -38,11 +53,30 @@ def turn(board)
   input = gets.strip
   index = input_to_index(input)
   if valid_move?(board, index)
-    move(board, index)
-    display_board(board)
+    move(board, index, current_player(board))
   else
-    turn(board)
+    until valid_move?(board, index)
+      puts "Please enter 1-9:"
+      input = gets
+      index = input_to_index(input)
   end
+  move(board, index, current_player(board))
+end
+  display_board(board)
+end
+
+####################
+
+def turn_count(board)
+      counter = 0
+
+  board.each do |board|
+
+    if board != " "
+      counter += 1
+    end
+  end
+  counter
 end
 
 ####################
@@ -139,12 +173,23 @@ end
 
 ####################
 
-def play(board)
-  turn = 0
-  until turn == 9
-    turn += 1
-    turn(board)
-  end
-end
+# def play(board)
+#   turn = 0
+#   until turn == 9
+#     turn += 1
+#     turn(board)
+#   end
+# end
 
 ####################
+
+def play(board)
+  while !over?(board)
+    turn(board)
+  end
+  if won?(board)
+    puts "Congratulations #{winner(board)}!"
+  elsif draw?(board)
+    puts "Cat's Game!"
+  end
+end
